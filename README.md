@@ -35,7 +35,12 @@ LockFly is a secure file transfer application designed to facilitate the secure 
     setup.bat
     ```
 
-3. **Follow the interactive prompts to send or receive files.**
+3. **Run the Application**
+    ```sh
+    python lockfly.py
+    ```
+    
+5. **Follow the interactive prompts to send or receive files.**
 
 ## Encryption Details
 
