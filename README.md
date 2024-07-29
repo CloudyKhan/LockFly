@@ -4,8 +4,8 @@ LockFly is a secure file transfer application designed to facilitate the secure 
 
 ## Features
 
-- **Secure File Transfer**: Utilizes symmetric encryption (Fernet) from the `cryptography` library for robust data protection.
-- **User-Friendly Interface**: Command-line interface with interactive prompts and progress bars for a seamless user experience.
+- **Secure File Transfer**: Utilizes symmetric encryption (Fernet) from the `cryptography` library for data protection.
+- **User-Friendly Interface**: Command-line interface with interactive prompts and progress bars for user confirmation.
 - **Cross-Platform Compatibility**: Designed to run on both Unix-based systems and Windows.
 - **Easy Setup**: Automated setup scripts to simplify the installation and execution process.
 - **Disk Space Check**: Ensures there is enough disk space before starting the file transfer to avoid any crashes.
