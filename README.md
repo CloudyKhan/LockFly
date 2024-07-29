@@ -22,7 +22,15 @@ LockFly is a secure file transfer application designed to facilitate the secure 
     cd lockfly
     ```
 
-2. **Run the setup script:**
+2. **Install dependencies:**
+
+    You can install the dependencies manually using `pip`:
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+    Or, you can use the provided setup script:
 
     ### Unix-based Systems
     ```sh
