@@ -16,12 +16,8 @@ def create_key(password):
     return base64.urlsafe_b64encode(hashlib.sha256(password.encode()).digest())
 
 def is_valid_ip(ip):
-    # Regex to check valid IP address
     regex = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-    if re.match(regex, ip):
-        return True
-    else:
-        return False
+    return re.match(regex, ip) is not None
 
 def show_welcome():
     print(r"""
@@ -54,7 +50,6 @@ def show_help():
     """)
 
 def check_disk_space(path, required_space):
-    """Check if there is enough disk space available at the given path."""
     total, used, free = shutil.disk_usage(path)
     return free >= required_space
 
@@ -75,62 +70,65 @@ def start_server():
             client_socket, address = s.accept()
             print(f"[INFO] {address} is connected.")
 
-            # Receive the session password from the client
             received_password = client_socket.recv(BUFFER_SIZE).decode().strip()
             print(f"[INFO] Password received")
 
-            # Verify the password
             if received_password != session_password:
                 print("[WARNING] Incorrect session password.")
                 client_socket.close()
                 continue
 
-            # Notify client that password is verified
             client_socket.send(b"OK")
 
-            # Receive the file info
             received = client_socket.recv(BUFFER_SIZE).decode()
             parts = received.split(SEPARATOR)
-            if len(parts) == 2:
-                filename, filesize_str = parts
-                filename = os.path.basename(filename)
-                try:
-                    filesize = int(filesize_str)
-                    print(f"[INFO] File info received")
-                except ValueError:
-                    print("[ERROR] Error converting filesize to integer")
-                    client_socket.close()
-                    continue
+            if len(parts) != 2:
+                print("[ERROR] Invalid file info received.")
+                client_socket.close()
+                continue
 
-                # Check if there is enough disk space
-                if not check_disk_space('.', filesize):
-                    print("[ERROR] Not enough disk space to receive the file.")
-                    client_socket.close()
-                    continue
+            filename, filesize_str = parts
+            filename = os.path.basename(filename)
+            try:
+                filesize = int(filesize_str)
+                print(f"[INFO] File info received")
+            except ValueError:
+                print("[ERROR] Error converting filesize to integer")
+                client_socket.close()
+                continue
 
-            encrypted_data = b""
-            with open(filename + ".enc", "wb") as f:
-                progress = tqdm.tqdm(range(filesize), f"Receiving file", unit="B", unit_scale=True, unit_divisor=1024)
-                while True:
-                    bytes_read = client_socket.recv(BUFFER_SIZE)
-                    if not bytes_read:
-                        break
-                    f.write(bytes_read)
-                    encrypted_data += bytes_read
-                    progress.update(len(bytes_read))
-                progress.close()
+            if not check_disk_space('.', filesize):
+                print("[ERROR] Not enough disk space to receive the file.")
+                client_socket.close()
+                continue
 
-            # Decrypt the data using the key derived from the password
-            decrypted_data = cipher.decrypt(encrypted_data)
-            with open(filename, "wb") as f:
-                f.write(decrypted_data)
+            try:
+                encrypted_data = b""
+                with open(filename + ".enc", "wb") as f:
+                    progress = tqdm.tqdm(range(filesize), f"Receiving file", unit="B", unit_scale=True, unit_divisor=1024)
+                    while True:
+                        bytes_read = client_socket.recv(BUFFER_SIZE)
+                        if not bytes_read:
+                            break
+                        f.write(bytes_read)
+                        encrypted_data += bytes_read
+                        progress.update(len(bytes_read))
+                    progress.close()
 
-            print(f"[INFO] File received and decrypted successfully.")
+                decrypted_data = cipher.decrypt(encrypted_data)
+                with open(filename, "wb") as f:
+                    f.write(decrypted_data)
 
-            # Clean up the encrypted file
-            os.remove(filename + ".enc")
+                print(f"[INFO] File received and decrypted successfully.")
 
-            client_socket.close()
+                os.remove(filename + ".enc")
+                client_socket.close()
+            except Exception as e:
+                print(f"[ERROR] An error occurred: {e}")
+                if os.path.exists(filename + ".enc"):
+                    os.remove(filename + ".enc")
+                client_socket.close()
+                continue
     except KeyboardInterrupt:
         print("\n[INFO] Server is shutting down gracefully.")
         s.close()
@@ -158,11 +156,9 @@ def start_client():
             s = socket.socket()
             s.connect((server_host, SERVER_PORT))
 
-            # Send the session password
             s.send(session_password.encode())
             print("[INFO] Session password sent")
 
-            # Wait for server confirmation
             confirmation = s.recv(BUFFER_SIZE).decode().strip()
             if confirmation != "OK":
                 print("[WARNING] Password verification failed")
@@ -170,13 +166,11 @@ def start_client():
                 return
             print("[INFO] Password verified")
 
-            # Send the file info
             file_info = f"{filename}{SEPARATOR}{len(encrypted_data)}"
             print(f"[INFO] Sending file info")
             s.send(file_info.encode())
             print("[INFO] File info sent")
 
-            # Start sending the file with progress indicator
             progress = tqdm.tqdm(range(len(encrypted_data)), f"Sending file", unit="B", unit_scale=True, unit_divisor=1024)
             for i in range(0, len(encrypted_data), BUFFER_SIZE):
                 s.sendall(encrypted_data[i:i+BUFFER_SIZE])
@@ -214,4 +208,3 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print("\n[INFO] Application interrupted. Exiting gracefully.")
             break
-
