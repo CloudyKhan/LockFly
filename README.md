@@ -1,6 +1,6 @@
 # LockFly
 
-LockFly is a secure file transfer application designed to facilitate the secure and encrypted transfer of files between devices. Leveraging Python's `cryptography` library, LockFly ensures data remains confidential and protected during transit.
+LockFly is a simple secure file transfer application designed to facilitate the secure and encrypted transfer of files between devices. Leveraging Python's `cryptography` library, LockFly ensures data remains confidential and protected during transit.
 
 ## Features
 
