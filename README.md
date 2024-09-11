@@ -54,12 +54,5 @@ LockFly is a simple secure file transfer application designed to facilitate the 
 
 LockFly employs symmetric encryption using the Fernet module from the `cryptography` library. Fernet uses AES in CBC mode with a 128-bit key for encryption and HMAC for authentication. This ensures that files are encrypted with a key derived from a password provided by the user, ensuring that only users with the correct password can decrypt and access the transferred files.
 
-## Developed By
 
-- **Developer**: dkhan25 (GitHub)
-- **Contact**: [GitHub Profile](https://github.com/dkhan25)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
