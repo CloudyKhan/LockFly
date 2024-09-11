@@ -36,9 +36,7 @@ def show_help():
     ************************************************
     * This application allows you to securely      *
     * send and receive files.                      *
-    *                                              *
-    * Developed by: dkhan25 (GitHub)               *
-    * License: MIT License                         *
+    *                                              *                        
     *                                              *
     * Options:                                     *
     * 1. Receive File: Run the server to receive   *
