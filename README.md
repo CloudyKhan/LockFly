@@ -18,7 +18,7 @@ LockFly is a simple secure file transfer application designed to facilitate the 
 
 1. **Clone the repository:**
     ```sh
-    git clone https://github.com/dkhan25/lockfly.git
+    git clone https://github.com/CloudyKhan/lockfly.git
     cd lockfly
     ```
 
